@@ -1,0 +1,61 @@
+<?php
+// We need to use sessions, so you should always start sessions using the below code.
+session_start();
+// If the user is not logged in redirect to the login page...
+if (!isset($_SESSION['loggedin'])) {
+	header('Location: index.html');
+	exit;
+}
+
+$conn_key = mysqli_connect('localhost', 'root', '', 'key-management');
+
+?>
+
+<?php require 'filesLogic.php';?>
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <link href="style.css?<?php echo time(); ?>" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+  <title>Download files</title>
+</head>
+<body class="loggedin">
+  <nav class="navtop">
+    <div>
+      <h1>SecureFiles</h1>
+      <a href="home.php"><i class="fas fa-home"></i>Home</a>
+      <a href="profile.php"><i class="fas fa-user-circle"></i>Profile</a>
+      <a href="logout.php"><i class="fas fa-sign-out-alt"></i>Logout</a>
+    </div>
+  </nav>
+  <div class="content">
+    <h2>Remove Files</h2>
+    <table>
+    <thead>
+        <th>ID</th>
+        <th>Size (in MB)</th>
+        <th>Owner</th>
+        <th>Downloads</th>
+        <th>Action</th>
+    </thead>
+    <tbody>
+
+    <?php foreach ($files as $file): ?>
+      <tr>
+        <?php if($file['owner'] == $_SESSION['name']) : ?>
+        <td><?php echo $file['id']; ?></td>
+        <td><?php echo floor($file['size'] / 1000) . ' KB'; ?></td>
+        <td><?php echo $file['owner']; ?></td>
+        <td><?php echo $file['downloads']; ?></td>
+        <td><a href="removeFile.php?remove_id=<?php echo $file['id'] ?>">Remove</a></td>
+        <?php endif; ?>
+      </tr>
+    <?php endforeach;?>
+
+    </tbody>
+    </table>
+  </div>
+</body>
+</html>
